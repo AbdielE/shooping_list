@@ -1,6 +1,6 @@
 import Swal from "sweetalert2"
 
-const NewItemButton = () => {
+const NewItemButton = ({listItems,setListItems}) => {
     const newItemModal = async () => {
         const {value} = await Swal.fire({
           title: "New Item information",
@@ -41,7 +41,17 @@ const NewItemButton = () => {
             return {name, quantity, unit};
           }
         })
-        console.log(value);
+
+        if(!value.name || !value.quantity || !value.unit) return
+        
+        setListItems([
+          ...listItems,
+          {
+              id: `${listItems.length+1}`,
+              ...value,
+              checked: false,
+          }
+      ])
     }
   return (
     <button 
