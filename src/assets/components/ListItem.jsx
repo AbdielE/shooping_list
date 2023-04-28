@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import {v4 as uuidv4} from "uuid";
 
 const ListItem = ({
   item,
@@ -6,10 +7,11 @@ const ListItem = ({
   listItems,
   setListItems
 }) => {
-  const {id, name, quantity, unit, checked} = item
+  const { id, name, quantity, unit, checked } = item
 
   const deleteListItem = () => {
     const newList = listItems.filter(item => item.id !== id);
+    localStorage.setItem("listItems", JSON.stringify(newList));
     setListItems(newList);
   }
 
@@ -18,15 +20,15 @@ const ListItem = ({
       ...listItems,
       {
         ...item,
-        id: (listItems.length + 1).toString,
+        id: uuidv4(),
       }
     ];
-
+    localStorage.setItem("listItems", JSON.stringify(newList));
     setListItems(newList);
   }
 
   const editListItem = async () => {
-    const {value} = await Swal.fire({
+    const { value } = await Swal.fire({
       title: "Item information",
       html: `
         <input 
@@ -62,24 +64,25 @@ const ListItem = ({
         const name = Swal.getPopup().querySelector("#name").value;
         const quantity = Swal.getPopup().querySelector("#quantity").value;
         const unit = Swal.getPopup().querySelector("#unit").value;
-        if(!name || !quantity || !unit){
+        if (!name || !quantity || !unit) {
           Swal.showValidationMessage("Please enter full information.");
         }
-        return {name, quantity, unit};
+        return { name, quantity, unit };
       }
     })
 
-    if(!value.name || !value.quantity || !value.unit) return
-    
+    if (!value.name || !value.quantity || !value.unit) return
+
     const newList = listItems.map((item) => {
-      if(item.id === id){
+      if (item.id === id) {
         item.name = value.name;
         item.quantity = value.quantity;
-        item.unit = value.unit;        
+        item.unit = value.unit;
       }
       return item;
     })
 
+    localStorage.setItem("listItems", JSON.stringify(newList));
     setListItems(newList);
   }
 
@@ -90,7 +93,7 @@ const ListItem = ({
           checked={checked}
           name={id}
           onClick={(e) => handleItemChecked(e)}
-          type="checkbox" 
+          type="checkbox"
         />
       </div>
       <div className="col-2">
@@ -103,26 +106,26 @@ const ListItem = ({
 
       <div
         className="col-5 col-md-6 text-start"
-        style={{textDecoration:checked && "line-through"}}>
-          {name}
+        style={{ textDecoration: checked && "line-through" }}>
+        {name}
       </div>
       <div className="col-4 col-md-3 btn-group btn-group-sm" role="group">
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-outline-primary"
           onClick={editListItem}
         >
           <i class="bi bi-pencil-square"></i>
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-outline-primary"
           onClick={cloneListItem}
         >
           <i class="bi bi-files"></i>
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-outline-danger"
           onClick={deleteListItem}
         >
